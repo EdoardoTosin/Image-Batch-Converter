@@ -275,8 +275,10 @@ def main(args):
     if wait_var.get():
         wait_keypress("exit")
 
-
+# Create a tkinter instance
 root = Tk()
+
+# Set the title
 root.title("Batch Image Converter")
 
 # Set the icon logo
