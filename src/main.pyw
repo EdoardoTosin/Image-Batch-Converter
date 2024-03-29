@@ -218,7 +218,7 @@ def main(args):
                     exception_files.append([root_path, filename])
 
     time_exec = datetime.now() - startTime
-
+    '''
     str_time = str(time_exec).split(".")[0].replace(":", "h ", 1).replace(
         ":", "m ", 1
     ) + "s"
@@ -250,7 +250,7 @@ def main(args):
         output_label.config(
             text=(output_label.cget("text") + "No corrupted images found.\n")
         )
-    '''
+    
     if len(other_files) == 1:
         output_label.config(
             text=(output_label.cget("text") + "No other files found.\n")
@@ -364,10 +364,9 @@ Button(root, text="Start Conversion", command=start_conversion).grid(
     row=5, column=0, columnspan=5, pady=10
 )
 
+'''
 output_label = Label(root, text="", justify=LEFT)
 output_label.grid(row=6, column=0, columnspan=5, padx=10, pady=10)
-
-completion_label = Label(root, text="", justify=LEFT)
-completion_label.grid(row=7, column=0, columnspan=5, padx=10, pady=10)
+'''
 
 root.mainloop()
