@@ -268,6 +268,8 @@ def main(args):
                     )
                 )
     '''
+    messagebox.showinfo("Conversion Complete", "Image conversion is complete.")
+    
     if alert_var.get():
         root.bell()
     if wait_var.get():
@@ -364,5 +366,8 @@ Button(root, text="Start Conversion", command=start_conversion).grid(
 
 output_label = Label(root, text="", justify=LEFT)
 output_label.grid(row=6, column=0, columnspan=5, padx=10, pady=10)
+
+completion_label = Label(root, text="", justify=LEFT)
+completion_label.grid(row=7, column=0, columnspan=5, padx=10, pady=10)
 
 root.mainloop()
