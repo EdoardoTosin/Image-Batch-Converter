@@ -10,6 +10,8 @@ from tkinter import filedialog, messagebox, ttk
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from PIL import Image, ImageTk
 from tqdm import tqdm
+import colorama
+from colorama import Fore, Back, Style
 import requests
 from packaging import version
 
@@ -102,7 +104,7 @@ def print_init(args):
     output_label.config(text=output_text)
 
 
-def process_image(args, root, filename):
+def process_image(args, root_path, filename):
     global converted_count
     if args.max_image_mpixels > 0:
         Image.MAX_IMAGE_PIXELS = args.max_image_mpixels
@@ -115,13 +117,13 @@ def process_image(args, root, filename):
     ]
     DPI = (args.dpi, args.dpi)
 
-    image_path = os.path.join(root, filename)
+    image_path = os.path.join(root_path, filename)
 
     try:
         img = Image.open(image_path)
     except:
-        if [root, filename] not in exception_files:
-            exception_files.append([root, filename])
+        if [root_path, filename] not in exception_files:
+            exception_files.append([root_path, filename])
     else:
         if filename.lower().endswith(".png"):
             colour_space = "RGBA"
@@ -172,15 +174,24 @@ def process_image(args, root, filename):
         converted_count += 1
 
 
+def wait_keypress(val):
+    
+    try:
+        print(f"\n{Fore.YELLOW}Press {Back.BLACK}{Style.BRIGHT}Enter{Style.NORMAL}{Back.RESET} to {val}{Style.RESET_ALL}", end='')
+        press = input()
+    except SyntaxError:
+        pass
+
+
 def main(args):
     #print_init(args)
 
     other_files = []
 
-    for root, dirnames, filenames in os.walk(args.path):
+    for root_path, dirnames, filenames in os.walk(args.path):
         for filename in filenames:
             if not filename.lower().endswith(filetype):
-                other_files.append([root, filename])
+                other_files.append([root_path, filename])
 
     print("\nProcessing images")
 
@@ -188,8 +199,8 @@ def main(args):
 
     with ThreadPoolExecutor() as executor:
         futures = [
-            executor.submit(process_image, args, root, filename)
-            for root, _, filenames in os.walk(args.path)
+            executor.submit(process_image, args, root_path, filename)
+            for root_path, _, filenames in os.walk(args.path)
             for filename in filenames
             if filename.lower().endswith(filetype)
         ]
@@ -203,8 +214,8 @@ def main(args):
             try:
                 data = future.result()
             except Exception as exc:
-                if [root, filename] not in exception_files:
-                    exception_files.append([root, filename])
+                if [root_path, filename] not in exception_files:
+                    exception_files.append([root_path, filename])
 
     time_exec = datetime.now() - startTime
 
