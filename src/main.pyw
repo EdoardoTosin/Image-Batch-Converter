@@ -8,7 +8,7 @@ from io import open
 from tkinter import *
 from tkinter import filedialog, messagebox, ttk
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageCms
 from tqdm import tqdm
 import colorama
 from colorama import Fore, Back, Style
@@ -104,6 +104,16 @@ def print_init(args):
     output_label.config(text=output_text)
 
 
+def convert_cmyk_to_rgb(image):
+    try:
+        cmyk_profile = ImageCms.getOpenProfile("USWebCoatedSWOP.icc")
+        srgb_profile = ImageCms.createProfile("sRGB")
+        image = ImageCms.profileToProfile(image, cmyk_profile, srgb_profile, outputMode='RGB')
+    except Exception as e:
+        print(f"Error converting CMYK to RGB: {e}")
+    return image
+
+
 def process_image(args, root_path, filename):
     global converted_count
     if args.max_image_mpixels > 0:
@@ -125,6 +135,9 @@ def process_image(args, root_path, filename):
         if [root_path, filename] not in exception_files:
             exception_files.append([root_path, filename])
     else:
+        if img.mode == 'CMYK':
+            img = convert_cmyk_to_rgb(img)
+        
         if filename.lower().endswith(".png"):
             colour_space = "RGBA"
         else:
